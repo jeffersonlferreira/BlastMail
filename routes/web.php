@@ -1,11 +1,15 @@
 <?php
 
-use App\Http\Controllers\EmailListController;
-use App\Http\Controllers\ProfileController;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\EmailListController;
 
 Route::get('/', function () {
-    return view('welcome');
+    Auth::loginUsingId(1);
+    return to_route('dashboard');
+
+    // return view('welcome');
 });
 
 Route::get('/dashboard', function () {
