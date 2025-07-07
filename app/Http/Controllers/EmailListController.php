@@ -7,13 +7,26 @@ use Illuminate\Http\Request;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rules\Email;
+use Illuminate\Database\Eloquent\Builder;
 
 class EmailListController extends Controller
 {
     public function index()
     {
+        $search = request('search', '');
+
+        $emailLists = EmailList::query()
+            ->when(
+                $search,
+                fn(Builder $query) => $query
+                    ->where('title', 'like', '%' . $search . '%')
+                    ->orWhere('id', '=', $search)
+            )
+            ->paginate(5)->appends(compact('search')); //PAGINAÇÃO COM O SEARCHED
+
         return view('email-list.index', [
-            'emailLists' => EmailList::query()->paginate(),
+            'emailLists' => $emailLists,
+            'search' => $search,
         ]);
     }
 

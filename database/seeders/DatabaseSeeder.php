@@ -2,9 +2,12 @@
 
 namespace Database\Seeders;
 
+use App\Models\EmailList;
+use App\Models\Subscriber;
 use App\Models\User;
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
+use Illuminate\Validation\Rules\Email;
 
 class DatabaseSeeder extends Seeder
 {
@@ -19,5 +22,12 @@ class DatabaseSeeder extends Seeder
             'name' => 'Test User',
             'email' => 'test@example.com',
         ]);
+
+        EmailList::factory(10)->create()
+            ->each(function (EmailList $list) {
+                Subscriber::factory()->count(rand(50, 200))->create([
+                    'email_list_id' => $list->id,
+                ]);
+            });
     }
 }
