@@ -20,6 +20,7 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        Model::unguard();
+        Model::unguard(); // REMOVE NECESSIDADE DE COLOCAR CAMPO NAS MODELS
+        Model::preventLazyLoading(! app()->isProduction()); // EVITA MÚLTIPLAS CONSULTAS AO BANCO DE DADOS, SOMENTE EM PRODUÇÃO
     }
 }
