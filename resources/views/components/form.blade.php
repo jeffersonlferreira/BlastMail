@@ -1,13 +1,14 @@
 @props([
     'post' => null,
     'put' => null,
+    'patch' => null,
     'delete' => null,
     'flat' => false,
 ])
 
 @php
 
-    $method = ($post or $put or $delete) ? 'POST' : 'GET';
+    $method = ($post or $put or $patch or $delete) ? 'POST' : 'GET';
 
 @endphp
 
@@ -18,6 +19,10 @@
 
     @if ($put)
         @method('PUT')
+    @endif
+
+    @if ($patch)
+        @method('PATCH')
     @endif
 
     @if ($delete)

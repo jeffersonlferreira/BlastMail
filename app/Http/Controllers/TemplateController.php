@@ -23,18 +23,24 @@ class TemplateController extends Controller
                     ->orWhere('id', '=', $search)
             )
             ->paginate(5)
-            ->appends(compact('search'));
+            ->appends(compact('search', 'withTrashed'));
 
-        return view('template.index', [
+        return view('templates.index', [
             'templates' => $templates,
             'search' => $search,
             'withTrashed' => $withTrashed,
         ]);
     }
 
+    public function show(Template $template)
+    {
+        return view('templates.show', ['template' => $template]);
+    }
+
+
     public function create()
     {
-        return view('template.create');
+        return view('templates.create');
     }
 
     public function store(Request $request)
@@ -46,12 +52,12 @@ class TemplateController extends Controller
 
         Template::create($data);
 
-        return to_route('template.index')->with('message', __('Template successfully created!'));
+        return to_route('templates.index')->with('message', __('Template successfully created!'));
     }
 
     public function edit(Template $template)
     {
-        return view('template.edit', ['template' => $template]);
+        return view('templates.edit', ['template' => $template]);
     }
 
     public function update(Request $request, Template $template)
@@ -71,6 +77,6 @@ class TemplateController extends Controller
     {
         $template->delete();
 
-        return to_route('template.index')->with('message', __('Template successfully deleted!'));
+        return to_route('templates.index')->with('message', __('Template successfully deleted!'));
     }
 }

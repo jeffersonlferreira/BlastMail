@@ -7,7 +7,7 @@
             <tr>
 
                 @foreach ($headers as $header)
-                    <th scope="col" class="p-4">{{ $header }}</th>
+                    <th scope="col" class="p-4 whitespace-nowrap">{{ $header }}</th>
                 @endforeach
 
             </tr>
