@@ -3,15 +3,19 @@
 namespace App\Http\Controllers;
 
 use App\Models\Campaign;
+use App\Models\Template;
+use App\Models\EmailList;
 use Illuminate\Http\Request;
 use Illuminate\Database\Eloquent\Builder;
+use App\Http\Requests\CampaignStoreRequest;
+use Illuminate\Support\Traits\Conditionable;
 
 class CampaignController extends Controller
 {
+    use Conditionable;
     public function index()
     {
         $search = request('search', '');
-
         $withTrashed = request('withTrashed', false);
 
         $campaigns = Campaign::query()
@@ -34,30 +38,49 @@ class CampaignController extends Controller
 
     public function create(?string $tab = null)
     {
-        return view('campaigns.create', [
-            'tab' => $tab,
-            'form' => match ($tab) {
-                'template' => '_template',
-                'schedule' => '_schedule',
-                default => '_config'
-            }
+        $data =  session()->get('campaign::create', [
+            'name' => null,
+            'subject' => null,
+            'email_list_id' => null,
+            'template_id' => null,
+            'body' => null,
+            'track_click' => null,
+            'track_open' => null,
+            'send_at' => null,
+            'send_when' => 'now',
         ]);
+
+        return view('campaigns.create', array_merge(
+            $this->when(blank($tab), fn() => [
+                'emailLists' => EmailList::query()->select(['id', 'title'])->orderBy('title')->get(),
+                'templates' => Template::query()->select(['id', 'name'])->orderBy('name')->get(),
+            ], fn() => []),
+            $this->when($tab == 'schedule', fn() => [
+                'countEmails' => EmailList::find($data['email_list_id'])->subscribers()->count(),
+                'template' => Template::find($data['template_id'])->name,
+            ], fn() => []),
+            [
+                'tab' => $tab,
+                'form' => match ($tab) {
+                    'template' => '_template',
+                    'schedule' => '_schedule',
+                    default => '_config',
+                },
+                'data' => $data,
+            ]
+        ));
     }
 
-    public function store(?string $tab = null)
+    public function store(CampaignStoreRequest $request, ?string $tab = null)
     {
-        if (blank($tab)) {
-            $data = request()->validate([
-                'name' => ['required', 'string', 'max:255'],
-                'subject' => ['required', 'max:40'],
-                'email_list_id' => ['nullable'],
-                'template_id' => ['nullable'],
-            ]);
+        $data = $request->getData();
+        $toRoute = $request->getToRoute();
 
-            session()->put('campaigns::create', $data);
-
-            return to_route('campaigns.create', ['tab' => 'template']);
+        if ($tab == 'schedule') {
+            Campaign::create($data);
         }
+
+        return response()->redirectTo($toRoute);
     }
 
     public function destroy(Campaign $campaign)
