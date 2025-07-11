@@ -1,25 +1,25 @@
 @props(['title', 'success' => null, 'info' => null, 'warning' => null, 'danger' => null, 'noIcon' => null])
 
 <div @class([
-    'relative w-full overflow-hidden rounded-md border bg-white text-neutral-600 dark:bg-neutral-950 dark:text-neutral-300',
-    'border-green-500' => $success,
-    'border-sky-500' => $info,
-    'border-amber-500' => $warning,
-    'border-red-500' => $danger,
+    'relative w-full overflow-hidden rounded-md border bg-white text-slate-700 dark:bg-slate-900 dark:text-slate-300',
+    'border-green-600' => $success,
+    'border-sky-600' => $info,
+    'border-amber-600' => $warning,
+    'border-red-600' => $danger,
 ]) role="alert">
     <div @class([
         'flex w-full items-center gap-2 p-4',
-        'bg-green-500/10' => $success,
-        'bg-sky-500/10' => $info,
-        'bg-amber-500/10' => $warning,
-        'bg-red-500/10' => $danger,
+        'bg-green-600/10' => $success,
+        'bg-sky-600/10' => $info,
+        'bg-amber-600/10' => $warning,
+        'bg-red-600/10' => $danger,
     ])>
         <div @class([
             'rounded-full p-1',
-            'bg-green-500/15 text-green-500' => $success,
-            'bg-sky-500/15 text-sky-500' => $info,
-            'bg-amber-500/15 text-amber-500' => $warning,
-            'bg-red-500/15 text-red-500' => $danger,
+            'bg-green-600/15 text-green-600' => $success,
+            'bg-sky-600/15 text-sky-600' => $info,
+            'bg-amber-600/15 text-amber-600' => $warning,
+            'bg-red-600/15 text-red-600' => $danger,
         ]) aria-hidden="true">
             @unless ($noIcon)
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="size-6"
@@ -33,10 +33,10 @@
         <div class="ml-2">
             <h3 @class([
                 'text-sm font-semibold',
-                'text-green-500' => $success,
-                'text-sky-500' => $info,
-                'text-amber-500' => $warning,
-                'text-red-500' => $danger,
+                'text-green-600' => $success,
+                'text-sky-600' => $info,
+                'text-amber-600' => $warning,
+                'text-red-600' => $danger,
             ])>{{ $title }}</h3>
             @if ($slot)
                 <p class="text-xs font-medium sm:text-sm">{{ $slot }}</p>
