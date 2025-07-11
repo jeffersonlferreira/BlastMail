@@ -14,6 +14,13 @@ class Campaign extends Model
     use HasFactory;
     use SoftDeletes;
 
+    protected function casts(): array
+    {
+        return [
+            'send_at' => 'datetime',
+        ];
+    }
+
     public function emailList(): BelongsTo
     {
         return $this->belongsTo(EmailList::class);

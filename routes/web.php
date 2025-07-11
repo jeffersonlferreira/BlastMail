@@ -45,15 +45,6 @@ Route::middleware('auth')->group(function () {
         ->name('campaigns.create');
     Route::post('campaigns/create/{tab?}', [CampaignController::class, 'store']);
     Route::patch('/campaigns/{campaign}/restore', [CampaignController::class, 'restore'])->withTrashed()->name('campaigns.restore');
-
-    Route::get('campaigns/{campaign}/emails', function (Campaign $campaign) {
-
-        foreach ($campaign->emailList->subscribers as $subscriber) {
-            Mail::to($subscriber->email)->send(new EmailCampaign($campaign));
-        }
-
-        return (new EmailCampaign($campaign))->render();
-    });
 });
 
 require __DIR__ . '/auth.php';

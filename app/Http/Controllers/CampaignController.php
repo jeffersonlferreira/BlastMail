@@ -8,6 +8,7 @@ use App\Models\EmailList;
 use Illuminate\Http\Request;
 use Illuminate\Database\Eloquent\Builder;
 use App\Http\Requests\CampaignStoreRequest;
+use App\Jobs\SendEmailCampaign;
 use Illuminate\Support\Traits\Conditionable;
 
 class CampaignController extends Controller
@@ -77,7 +78,10 @@ class CampaignController extends Controller
         $toRoute = $request->getToRoute();
 
         if ($tab == 'schedule') {
-            Campaign::create($data);
+            dd($data);
+            $campaign = Campaign::create($data);
+
+            SendEmailCampaign::dispatchAfterResponse($campaign);
         }
 
         return response()->redirectTo($toRoute);
