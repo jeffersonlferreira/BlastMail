@@ -2,6 +2,8 @@
 
 namespace Database\Seeders;
 
+use App\Models\Campaign;
+use App\Models\CampaignMail;
 use App\Models\EmailList;
 use App\Models\Subscriber;
 use App\Models\User;
@@ -21,6 +23,7 @@ class DatabaseSeeder extends Seeder
             TemplateSeeder::class,
             EmailListSeeder::class,
             CampaignSeeder::class,
+            CampaignMailSeeder::class,
         ]);
     }
 }

@@ -2,13 +2,14 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\CampaignShowRequest;
 use App\Models\Campaign;
 use App\Models\Template;
 use App\Models\EmailList;
 use Illuminate\Http\Request;
 use Illuminate\Database\Eloquent\Builder;
 use App\Http\Requests\CampaignStoreRequest;
-use App\Jobs\SendEmailCampaign;
+use App\Jobs\SendEmailsCampaign;
 use Illuminate\Support\Traits\Conditionable;
 
 class CampaignController extends Controller
@@ -37,13 +38,11 @@ class CampaignController extends Controller
         ]);
     }
 
-    public function show(Campaign $campaign, ?string $what = null)
+    public function show(CampaignShowRequest $request, Campaign $campaign, ?string $what = null)
     {
-        if (is_null($what)) {
-            return to_route('campaigns.show', ['campaign' => $campaign, 'what' => 'statistics']);
+        if ($redirect = $request->checkWhat()) {
+            return $redirect;
         }
-
-        abort_unless(in_array($what, ['statistics', 'open', 'clicked']), 404);
 
         $search = request()->search;
 
@@ -91,10 +90,9 @@ class CampaignController extends Controller
         $toRoute = $request->getToRoute();
 
         if ($tab == 'schedule') {
-            dd($data);
             $campaign = Campaign::create($data);
 
-            SendEmailCampaign::dispatchAfterResponse($campaign);
+            SendEmailsCampaign::dispatchAfterResponse($campaign);
         }
 
         return response()->redirectTo($toRoute);
