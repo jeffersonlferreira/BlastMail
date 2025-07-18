@@ -22,6 +22,7 @@ Route::get('/dashboard', function () {
 })->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::get('/t/{mail}/o', [TrackingController::class, 'openings'])->name('tracking.openings');
+Route::get('/t/{mail}/c', [TrackingController::class, 'clicks'])->name('tracking.clicks');
 
 Route::middleware('auth')->group(function () {
 

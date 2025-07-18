@@ -13,4 +13,11 @@ class TrackingController extends Controller
 
         $mail->save();
     }
+
+    public function clicks(CampaignMail $mail)
+    {
+        $mail->clicks++;
+
+        $mail->save();
+    }
 }
