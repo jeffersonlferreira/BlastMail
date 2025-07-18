@@ -25,7 +25,7 @@ class CampaignController extends Controller
             ->when(
                 $search,
                 fn(Builder $query) => $query
-                    ->where('name', 'like', '%' . $search . '%')
+                    ->where('name', 'like', "%$search%")
                     ->orWhere('id', '=', $search)
             )
             ->paginate(5)
@@ -46,18 +46,15 @@ class CampaignController extends Controller
 
         $search = request()->search;
 
-        $query = $campaign
-            ->mails()
-            ->selectRaw('
-                    count(subscriber_id) as total_subscribers
-                ,   sum(openings) as total_openings
-                ,   count(case when openings > 0 then subscriber_id end) as unique_openings
-                ,   round((cast(count(case when openings > 0 then subscriber_id end) as float) / cast(count(subscriber_id) as float)) * 100) as openings_rate
-                ,   sum(clicks) as total_clicks
-                ,   count(case when clicks > 0 then subscriber_id end) as unique_clicks
-                ,   round((cast(count(case when clicks > 0 then subscriber_id end) as float) / cast(count(subscriber_id) as float)) * 100) as clicks_rate
-            ')
-            ->first();
+        $query = $campaign->mails()
+            ->when($what == 'statistics', fn(Builder $query) => $query->statistics())
+            ->when($what == 'open', fn(Builder $query) => $query->openings($search))
+            ->when($what == 'clicked', fn(Builder $query) => $query->clicks($search))
+            ->simplePaginate(5)->withQueryString();
+
+        if ($what == 'statistics') {
+            $query = $query->first()->toArray();
+        }
 
         return view('campaigns.show', compact('campaign', 'what', 'search', 'query'));
     }
