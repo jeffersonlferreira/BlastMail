@@ -15,6 +15,7 @@ use Illuminate\Support\Traits\Conditionable;
 class CampaignController extends Controller
 {
     use Conditionable;
+
     public function index()
     {
         $search = request('search', '');
