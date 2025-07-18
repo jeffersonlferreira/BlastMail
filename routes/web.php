@@ -1,7 +1,6 @@
 <?php
 
 use App\Http\Controllers\CampaignController;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\EmailListController;
@@ -10,21 +9,10 @@ use App\Http\Controllers\TemplateController;
 use App\Http\Controllers\TrackingController;
 use App\Http\Middleware\CampaignCreateSessionControl;
 
-Route::get('/', function () {
-    Auth::loginUsingId(1);
-    return to_route('dashboard');
-
-    // return view('welcome');
-});
-
-Route::get('/dashboard', function () {
-    return view('dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');
-
 Route::get('/t/{mail}/o', [TrackingController::class, 'openings'])->name('tracking.openings');
 Route::get('/t/{mail}/c', [TrackingController::class, 'clicks'])->name('tracking.clicks');
 
-Route::middleware('auth')->group(function () {
+Route::middleware(['auth', 'verified'])->group(function () {
 
     //region Profile
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
@@ -45,7 +33,7 @@ Route::middleware('auth')->group(function () {
     Route::resource('templates', TemplateController::class);
 
     //region Campaign
-    Route::get('/campaigns', [CampaignController::class, 'index'])->name('campaigns.index');
+    Route::get('/', [CampaignController::class, 'index'])->name('campaigns.index');
     Route::get('/campaigns/create/{tab?}', [CampaignController::class, 'create'])->middleware(CampaignCreateSessionControl::class)->name('campaigns.create');
     Route::post('/campaigns/create/{tab?}', [CampaignController::class, 'store']);
     Route::get('/campaigns/{campaign}/{what?}', [CampaignController::class, 'show'])->withTrashed()->name('campaigns.show');
