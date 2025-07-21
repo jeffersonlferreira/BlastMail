@@ -23,8 +23,8 @@ class CampaignStoreRequest extends FormRequest
     public function rules(): array
     {
         $tab = $this->route('tab');
-        $rules = [];
-        $map = array_merge([
+
+        $defaults = [
             'name' => null,
             'subject' => null,
             'email_list_id' => null,
@@ -34,63 +34,69 @@ class CampaignStoreRequest extends FormRequest
             'track_open' => null,
             'send_at' => null,
             'send_when' => null,
-        ], $this->all());
+        ];
+
+        $sessionData = array_merge($defaults, session('campaigns::create', []));
+
+        $newInput = $this->all();
+
+        foreach ($newInput as $key => $value) {
+            if (($key === 'track_click' || $key === 'track_open') && isset($sessionData[$key])) {
+                continue;
+            }
+            $sessionData[$key] = $value;
+        }
+
+        if (!empty($sessionData['template_id']) && blank($sessionData['body'])) {
+            if ($template = Template::find($sessionData['template_id'])) {
+                $sessionData['body'] = $template->body;
+            }
+        }
+
+        $rules = [];
 
         if (blank($tab)) {
             $rules = [
-                'name' => ['required', 'max:255'],
-                'subject' => ['required', 'max:40'],
+                'name' => ['required', 'string', 'max:255'],
+                'subject' => ['required', 'string', 'max:40'],
                 'email_list_id' => ['required', 'exists:email_lists,id'],
                 'template_id' => ['required', 'exists:templates,id'],
             ];
         }
 
-        if ($tab == 'template') {
-            $rules = [
-                'body' => ['required'],
-            ];
+        if ($tab === 'template') {
+            $rules = ['body' => ['required', 'string']];
         }
 
-        if ($tab == 'schedule') {
-            if ($map['send_when'] == 'now') {
-                $map['send_at'] = now()->format('Y-m-d');
-            } elseif ($map['send_when'] == 'later') {
-                $rules = [
-                    'send_at' => ['required', 'date', 'after:today'],
-                ];
+        if ($tab === 'schedule') {
+            $sendWhen = $sessionData['send_when'] ?? null;
+
+            if ($sendWhen === 'now') {
+                $sessionData['send_at'] = now();
+            } elseif ($sendWhen === 'later') {
+                $rules = ['send_at' => ['required', 'date', 'after:today']];
             } else {
                 $rules = ['send_when' => ['required']];
             }
         }
 
-        // --
-        $session = session('campaign::create', $map);
-        foreach ($session as $key => $value) {
-            $newValue = data_get($session, $key);
-            if ($key == 'track_click' || $key == 'track_open') {
-                $session[$key] = $newValue;
-            } elseif (filled($newValue)) {
-                $session[$key] = $newValue;
-            }
-        }
-        // --
-
-        if ($templateId = $session['template_id'] && blank($session['body'])) {
-            $template = Template::find($templateId);
-            $session['body'] = $template->body;
-        }
-
-        session()->put('campaign::create', $session);
+        session()->put('campaigns::create', $sessionData);
 
         return $rules;
     }
 
+    /**
+     * Pega os dados finais da sessão para salvar no banco.
+     * (Seu método original já estava bom, apenas um pequeno ajuste)
+     */
     public function getData()
     {
-        $session = session()->get('campaign::create');
+        $session = session()->get('campaigns::create', []);
 
-        unset($session['_token']);
-        unset($session['send_when']);
+        unset(
+            $session['_token'],
+            $session['send_when']
+        );
 
         $session['track_click'] = $session['track_click'] ?: false;
         $session['track_open'] = $session['track_open'] ?: false;
@@ -98,6 +104,10 @@ class CampaignStoreRequest extends FormRequest
         return $session;
     }
 
+    /**
+     * Define para qual rota redirecionar após cada passo.
+     * (Seu método original está perfeito)
+     */
     public function getToRoute()
     {
         $tab = $this->route('tab');

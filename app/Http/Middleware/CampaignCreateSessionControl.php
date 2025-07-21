@@ -16,9 +16,9 @@ class CampaignCreateSessionControl
     public function handle(Request $request, Closure $next): Response
     {
         if (! str($request->header('referer'))->contains($request->route()->compiled->getStaticPrefix())) {
-            session()->forget('campaign::create');
+            session()->forget('campaigns::create');
         } else {
-            $session = session()->get('campaign::create');
+            $session = session()->get('campaigns::create');
             $tab = $request->route('tab');
 
             if (filled($tab) && blank(data_get($session, 'name'))) {
