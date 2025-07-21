@@ -4,7 +4,7 @@
 
 ![BlastMail Screenshot](https://img.shields.io/badge/status-concluído-green)
 ![PHP](https://img.shields.io/badge/PHP-8.2%2B-blueviolet)
-![Laravel](https://img.shields.io/badge/Laravel-10.x-red)
+![Laravel](https://img.shields.io/badge/Laravel-12.x-red)
 ![License](https://img.shields.io/badge/license-MIT-blue)
 
 ## 📝 Sobre o Projeto
