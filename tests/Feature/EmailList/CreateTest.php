@@ -1,30 +1,29 @@
 <?php
 
-use App\Models\User;
 use Illuminate\Http\UploadedFile;
-
+use function Pest\Laravel\{post, assertDatabaseHas};
 
 beforeEach(function () {
     login();
 });
 
-test('title should be required', function () {
-    $this->post(route('email-list.create'), [])
+it('title should be required', function () {
+    post(route('email-list.create'), [])
         ->assertSessionHasErrors(['title']);
 });
 
-test('title should have a max of 255 characters', function () {
-    $this->post(route('email-list.create'), ['title' => str_repeat('*', 256)])
+it('title should have a max of 255 characters', function () {
+    post(route('email-list.create'), ['title' => str_repeat('*', 256)])
         ->assertSessionHasErrors(['title']);
 });
 
-test('file should be required', function () {
-    $this->post(route('email-list.create'), [])
+it('file should be required', function () {
+    post(route('email-list.create'), [])
         ->assertSessionHasErrors(['file']);
 });
 
-test('it should be able create an email list', function () {
-    // $this->withoutExceptionHandling(); // MOSTRAR MAIS DETALHES DE ERRO
+it('it should be able create an email list', function () {
+    // withoutExceptionHandling(); // MOSTRAR MAIS DETALHES DE ERRO
     // Arrange
     $data = [
         'title' => 'Email List Test',
@@ -38,16 +37,16 @@ test('it should be able create an email list', function () {
     ];
 
     // Act
-    $request = $this->post(route('email-list.create'), $data);
+    $response = post(route('email-list.create'), $data);
 
     // Assert
-    $request->assertRedirectToRoute('email-list.index');
+    $response->assertRedirectToRoute('email-list.index');
 
-    $this->assertDatabaseHas('email_lists', [
+    assertDatabaseHas('email_lists', [
         'title' => 'Email List Test',
     ]);
 
-    $this->assertDatabaseHas('subscribers', [
+    assertDatabaseHas('subscribers', [
         'email_list_id' => 1,
         'name'          => 'Joe Doe',
         'email'         => 'joe@doe.com'
