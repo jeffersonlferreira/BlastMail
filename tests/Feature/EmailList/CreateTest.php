@@ -8,32 +8,28 @@ use Illuminate\Http\UploadedFile;
 
 class CreateTest extends TestCase
 {
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        $this->login();
+    }
+
+
     public function test_title_should_be_required()
     {
-        /** @var User $user */
-        $user = User::factory()->create();
-        $this->actingAs($user);
-
         $this->post(route('email-list.create'), [])
             ->assertSessionHasErrors(['title']);
     }
 
     public function test_title_should_have_a_max_of_255_characters()
     {
-        /** @var User $user */
-        $user = User::factory()->create();
-        $this->actingAs($user);
-
         $this->post(route('email-list.create'), ['title' => str_repeat('*', 256)])
             ->assertSessionHasErrors(['title']);
     }
 
     public function test_file_should_be_required()
     {
-        /** @var User $user */
-        $user = User::factory()->create();
-        $this->actingAs($user);
-
         $this->post(route('email-list.create'), [])
             ->assertSessionHasErrors(['file']);
     }
@@ -43,10 +39,6 @@ class CreateTest extends TestCase
         // $this->withoutExceptionHandling(); // MOSTRAR MAIS DETALHES DE ERRO
 
         // Arrange
-        /** @var User $user */
-        $user = User::factory()->create();
-        $this->actingAs($user);
-
         $data = [
             'title' => 'Email List Test',
             'file'  => UploadedFile::fake()->createWithContent(
