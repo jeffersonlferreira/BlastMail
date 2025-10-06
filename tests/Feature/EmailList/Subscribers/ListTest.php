@@ -146,9 +146,9 @@ it('should be paginated', function () {
     $response = get(route('subscribers.index', $this->emailList));
 
     $response->assertViewHas('subscribers', function ($value) {
-        expect($value)->count(15);
-
         expect($value)->toBeInstanceOf(LengthAwarePaginator::class);
+
+        expect($value)->toHaveCount(5);
 
         return true;
     });
