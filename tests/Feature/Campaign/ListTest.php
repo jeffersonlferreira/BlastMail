@@ -30,7 +30,7 @@ it('should be possible see the entire list of campaign', function () {
 
 it('should be able to search a campaign', function () {
     Campaign::factory()->count(5)->create();
-    Campaign::factory()->create(['name' => 'Testing']);
+    Campaign::factory()->create(['name' => 'Testing', 'deleted_at' => null]);
 
     //Filtrar com Nome
     get(route('campaigns.index', ['search' => 'Testing']))
@@ -43,7 +43,7 @@ it('should be able to search a campaign', function () {
 
 it('should be able to search by id', function () {
     Campaign::factory()->count(5)->create();
-    Campaign::factory()->create(['name' => 'Testing']);
+    Campaign::factory()->create(['name' => 'Testing', 'deleted_at' => null]);
 
     //Filtrar com ID
     get(route('campaigns.index', ['search' => 6]))
