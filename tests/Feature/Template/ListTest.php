@@ -2,7 +2,6 @@
 
 use App\Models\Template;
 use Illuminate\Support\Facades\Auth;
-
 use Illuminate\Pagination\LengthAwarePaginator;
 use function Pest\Laravel\{delete, get, getJson, assertSoftDeleted};
 
