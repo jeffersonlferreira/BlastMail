@@ -16,19 +16,20 @@ class CampaignCreateSessionControl
     public function handle(Request $request, Closure $next): Response
     {
         if (! str($request->header('referer'))->contains($request->route()->compiled->getStaticPrefix())) {
-            session()->forget('campaigns::create');
-        } else {
-            $session = session()->get('campaigns::create');
-            $tab = $request->route('tab');
-
-            if (filled($tab) && blank(data_get($session, 'name'))) {
-                return to_route('campaigns.create');
-            }
-
-            if ($tab == 'schedule' && blank(data_get($session, 'body'))) {
-                return to_route('campaigns.create', ['tab' => 'template']);
-            }
+            session()->forget('campaigns');
         }
+
+        $session = session()->get('campaigns');
+        $tab = $request->route('tab');
+
+        if (filled($tab) && blank(data_get($session, 'name'))) {
+            return to_route('campaigns.create');
+        }
+
+        if ($tab == 'schedule' && blank(data_get($session, 'body'))) {
+            return to_route('campaigns.create', ['tab' => 'template']);
+        }
+
 
         return $next($request);
     }
