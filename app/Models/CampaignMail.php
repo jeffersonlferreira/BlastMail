@@ -30,15 +30,17 @@ class CampaignMail extends Model
         return $query->with('subscriber')
             ->when(
                 $search,
-                fn(Builder $query) => $query
-                    ->whereHas(
-                        'subscriber',
-                        fn(Builder $query) => $query
-                            ->where('name', 'like', "%$search%")
-                            ->where('email', 'like', "%$search%")
-                    )->orWhere('openings', '=', $search)
+                function (Builder $query, $search) {
+                    $query->where(function (Builder $query) use ($search) {
+                        $query->whereHas('subscriber', function (Builder $q) use ($search) {
+                            $q->where('name', 'like', "%{$search}%")
+                                ->orWhere('email', 'like', "%{$search}%");
+                        })
+                            ->orWhere('openings', '=', $search);
+                    });
+                }
             )
-            ->orderBy('openings', 'desc');
+            ->orderByDesc('openings');
     }
 
     public function scopeClicks(Builder $query, ?string $search)
@@ -46,15 +48,17 @@ class CampaignMail extends Model
         return $query->with('subscriber')
             ->when(
                 $search,
-                fn(Builder $query) => $query
-                    ->whereHas(
-                        'subscriber',
-                        fn(Builder $query) => $query
-                            ->where('name', 'like', "%$search%")
-                            ->where('email', 'like', "%$search%")
-                    )->orWhere('clicks', '=', $search)
+                function (Builder $query, $search) {
+                    $query->where(function (Builder $query) use ($search) {
+                        $query->whereHas('subscriber', function (Builder $q) use ($search) {
+                            $q->where('name', 'like', "%{$search}%")
+                                ->orWhere('email', 'like', "%{$search}%");
+                        })
+                            ->orWhere('clicks', '=', $search);
+                    });
+                }
             )
-            ->orderBy('clicks', 'desc');
+            ->orderByDesc('clicks');
     }
 
     public function campaign(): BelongsTo
