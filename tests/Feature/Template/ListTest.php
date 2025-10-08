@@ -46,17 +46,17 @@ it('should be able to search a templates', function () {
 
 it('should be able to search by id', function () {
     Template::factory()->count(5)->create();
-    Template::factory()->create([
+    $template = Template::factory()->create([
         'name' => 'Template Testing 2',
         'body' => 'Some body content'
     ]);
 
     //Filtrar com ID
     get(route('templates.index', ['search' => 6]))
-        ->assertViewHas('templates', function ($value) {
+        ->assertViewHas('templates', function ($value) use ($template) {
             expect($value)->toHaveCount(1);
 
-            expect($value)->first()->id->toBe(6);
+            expect($value)->first()->id->toBe($template->id);
 
             expect($value)->first()->name->toBe('Template Testing 2');
 

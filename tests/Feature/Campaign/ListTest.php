@@ -43,14 +43,14 @@ it('should be able to search a campaign', function () {
 
 it('should be able to search by id', function () {
     Campaign::factory()->count(5)->create();
-    Campaign::factory()->create(['name' => 'Testing', 'deleted_at' => null]);
+    $campaign = Campaign::factory()->create(['name' => 'Testing', 'deleted_at' => null]);
 
     //Filtrar com ID
-    get(route('campaigns.index', ['search' => 6]))
-        ->assertViewHas('campaigns', function ($value) {
+    get(route('campaigns.index', ['search' => $campaign->id]))
+        ->assertViewHas('campaigns', function ($value) use ($campaign) {
             expect($value)->toHaveCount(1);
 
-            expect($value)->first()->id->toBe(6);
+            expect($value)->first()->id->toBe($campaign->id);
 
             expect($value)->first()->name->toBe('Testing');
 
